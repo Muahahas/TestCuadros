@@ -3,26 +3,60 @@ package com.testcuadros.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.testcuadros.MainGame;
 
 /**
- * Created by eloi on 10/11/2015.
+ * @Author eloi
+ * @Date 10/11/2015.
  */
 public class MainMenuScreen implements Screen {
 
+    private Stage stage;
     final MainGame game;
-    private final float startTime;
-    OrthographicCamera camera;
+    final Skin skin;
 
     public MainMenuScreen(final MainGame game) {
+        this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
         this.game = game;
+        this.stage = new Stage();
 
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, MainGame.width, MainGame.height);
+        final Button btnNewGame, btnLoadGame, btnSettings, btnQuit;
+        btnNewGame = new TextButton("New Game", skin);
+        btnLoadGame = new TextButton("Maybe later..", skin);
+        btnSettings = new TextButton("Maybe in a long time..", skin);
+        btnQuit = new TextButton("Quit", skin);
 
-        startTime = System.nanoTime();
+        final int w = 300, h = 50, sep = 20;
+        Table tblLayout = new Table();
+        tblLayout.add(btnNewGame).width(w).height(h).space(sep).row();
+        tblLayout.add(btnLoadGame).width(w).height(h).space(sep).row();
+        tblLayout.add(btnSettings).width(w).height(h).space(sep).row();
+        tblLayout.add(btnQuit).width(w).height(h).space(sep).row();
+
+        btnNewGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new GameScreen(game));
+            }
+        });
+        btnQuit.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.exit();
+            }
+        });
+
+        tblLayout.setFillParent(true);
+        stage.addActor(tblLayout);
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
@@ -32,37 +66,16 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-
-
-        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
+        Gdx.gl.glClearColor(0.3f, 0.3f, 0.3f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        GlyphLayout glyphLayout = new GlyphLayout();
-        String welcome_str = "Welcome to nain menu!!! ";
-        String tapAnywhere_str = "Tap anywhere to begin!";
-        glyphLayout.setText(game.font, welcome_str);
-        int str1_size = (int) glyphLayout.width;
-        glyphLayout.setText(game.font, tapAnywhere_str);
-        int str2_size = (int) glyphLayout.width;
-
-
-        camera.update();
-        game.batch.setProjectionMatrix(camera.combined);
-
-        game.batch.begin();
-        game.font.draw(game.batch, welcome_str, MainGame.width / 2 - str1_size / 2, 250);
-        game.font.draw(game.batch, tapAnywhere_str, MainGame.width / 2 - str2_size / 2, 230);
-        game.batch.end();
-
-        if (Gdx.input.isTouched() && (System.nanoTime() - startTime) / 1000000000f > 2f) {
-            game.setScreen(new GameScreen(game));
-            dispose();
-        }
+        stage.act();
+        stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
-
+        stage.getViewport().update(width, height);
     }
 
     @Override
@@ -82,6 +95,7 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
+        stage.dispose();
 
     }
 }
