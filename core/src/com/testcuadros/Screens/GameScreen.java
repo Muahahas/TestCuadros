@@ -20,27 +20,35 @@ import com.testcuadros.MainGame;
 
 
 /**
- * @Authoreloi
+ * @Author eloi
  * @Date 10/11/2015.
  */
 
 public class GameScreen implements Screen {
+
+    final int width, height, size, xStart, yStart;
+
     private Stage stage;
     final MainGame game;
     final Skin skin;
-    private Actor square;
+    private ActorSquare[][] squares;
 
     public GameScreen(final MainGame game) {
 
+        width = Gdx.graphics.getWidth();
+        height = Gdx.graphics.getHeight();
+        size = height/5;
+        xStart = (width-(3*size))/2;
+        yStart = size;
+
         this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
         this.game = game;
-        this.stage = new Stage(new ScreenViewport());
+        this.stage = new Stage();
 
-        square = new ActorSquare();
         final Button btnExit = new TextButton("Exit", skin);
 
         Table tblLayout = new Table();
-        tblLayout.top().debug();
+        tblLayout.top();
         tblLayout.add(btnExit).pad(10).height(30).row();
         tblLayout.setFillParent(true);
         btnExit.addListener(new ChangeListener() {
@@ -51,21 +59,30 @@ public class GameScreen implements Screen {
         });
         stage.addActor(tblLayout);
 
-        stage.addActor(square);
-        square.addCaptureListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 
-                square.addAction(Actions.color(Color.WHITE, 0.5f));
-                return true;
+        squares = new ActorSquare[3][3];
+        for(int y=0;y<3;y++){
+            for(int x=0;x<3;x++){
+                final ActorSquare square = new ActorSquare();
+                square.setPosition(xStart+size*x,yStart+size*y);
+                square.setSize(size,size);
+                stage.addActor(square);
+                square.addCaptureListener(new InputListener() {
+                    @Override
+                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                        square.addAction(Actions.color(Color.WHITE, 0.3f));
+                        return true;
+                    }
+
+                    @Override
+                    public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                        square.addAction(Actions.color(Color.RED, 0.3f));
+                    }
+                });
+                squares[x][y] = square;
 
             }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                square.addAction(Actions.color(Color.RED, 1));
-            }
-        });
+        }
 
         Gdx.input.setInputProcessor(stage);
 
@@ -107,6 +124,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        stage.dispose();
     }
 }
