@@ -16,15 +16,14 @@ import com.testcuadros.MainGame;
 
 /**
  * @Author eloi
- * @Date 10/11/2015.
+ * @Date 17/11/2015.
  */
-public class MainMenuScreen implements Screen {
-
+public class NewGameScreen implements Screen {
     private Stage stage;
     final MainGame game;
     final Skin skin;
 
-    public MainMenuScreen(final MainGame game) {
+    public NewGameScreen(final MainGame game) {
         this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
         this.game = game;
         this.stage = new Stage();
@@ -33,30 +32,51 @@ public class MainMenuScreen implements Screen {
         stage.addActor(imgFondo);
 
 
-        final Button btnNewGame, btnLoadGame, btnSettings, btnQuit;
-        btnNewGame = new TextButton("New Game", skin);
-        btnLoadGame = new TextButton("Maybe later..", skin);
-        btnSettings = new TextButton("Maybe in a long time..", skin);
+        final Button btn3, btn4, btn5, btn9, btnQuit;
+        btn3 = new TextButton("3x3", skin);
+        btn4 = new TextButton("4x4", skin);
+        btn5 = new TextButton("5x5", skin);
+        btn9 = new TextButton("9x9", skin);
+
         btnQuit = new TextButton("Quit", skin);
 
         final int w = 300, h = 50, sep = 20;
         Table tblLayout = new Table();
-        tblLayout.add(btnNewGame).width(w).height(h).space(sep).row();
-        tblLayout.add(btnLoadGame).width(w).height(h).space(sep).row();
-        tblLayout.add(btnSettings).width(w).height(h).space(sep).row();
+        tblLayout.add(btn3).width(w).height(h).space(sep).row();
+        tblLayout.add(btn4).width(w).height(h).space(sep).row();
+        tblLayout.add(btn5).width(w).height(h).space(sep).row();
+        tblLayout.add(btn9).width(w).height(h).space(sep).row();
         tblLayout.add(btnQuit).width(w).height(h).space(sep).row();
 
-        btnNewGame.addListener(new ChangeListener() {
+        btn3.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new NewGameScreen(game));
+                game.setScreen(new GameScreen(game, 3));
+            }
+        });
+        btn4.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new GameScreen(game, 4));
+            }
+        });
+        btn5.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new GameScreen(game, 5));
+            }
+        });
+        btn9.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new GameScreen(game, 9));
             }
         });
 
         btnQuit.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Gdx.app.exit();
+                game.setScreen(new MainMenuScreen(game));
             }
         });
 
@@ -77,6 +97,7 @@ public class MainMenuScreen implements Screen {
 
         stage.act();
         stage.draw();
+
     }
 
     @Override
@@ -102,6 +123,5 @@ public class MainMenuScreen implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
-
     }
 }

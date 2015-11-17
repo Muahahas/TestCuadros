@@ -5,6 +5,7 @@ import com.testcuadros.Screens.MainMenuScreen;
 
 public class MainGame extends Game {
 
+
     public void create() {
         this.setScreen(new MainMenuScreen(this));
     }
@@ -15,6 +16,6 @@ public class MainGame extends Game {
     }
 
     public void dispose() {
-
+        super.dispose();
     }
 }
