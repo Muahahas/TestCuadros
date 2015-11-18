@@ -1,9 +1,12 @@
 package com.testcuadros.Screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -15,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.testcuadros.Actors.ActorLinea;
 import com.testcuadros.Actors.ActorSquare;
+import com.testcuadros.Graphics.ZoomGestureDetector;
 import com.testcuadros.MainGame;
 
 
@@ -37,12 +41,17 @@ public class GameScreen implements Screen {
     public int pointsP2;
 
     private Stage stage;
+    private Stage stageHud;
+    private Stage stageBckgrnd;
     final MainGame game;
     final Skin skin;
     public int linesTouched;
     public Table hud;
+    Image imgFondo;
 
     public GameScreen(final MainGame game, int max) {
+
+
         this.max = max;
         linesTouched = 0;
         changeTurn1 = false;
@@ -60,14 +69,23 @@ public class GameScreen implements Screen {
         this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
         this.game = game;
         this.stage = new Stage();
-        Image imgFondo = new Image(new Texture("stars.png"));
+        this.stageBckgrnd= new Stage();
+
+        imgFondo = new Image(new Texture("stars.png"));
         imgFondo.setFillParent(true);
-        stage.addActor(imgFondo);
+        stageBckgrnd.addActor(imgFondo);
 
         createHud();
         createSquares();
 
-        Gdx.input.setInputProcessor(stage);
+        InputMultiplexer multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(stageHud);
+        multiplexer.addProcessor(stage);
+
+        ZoomGestureDetector gestureD = new ZoomGestureDetector((OrthographicCamera) stage.getCamera());
+        multiplexer.addProcessor(new GestureDetector(gestureD));
+
+        Gdx.input.setInputProcessor(multiplexer);
 
     }
 
@@ -80,6 +98,7 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0.3f, 0.3f, 0.3f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        stageBckgrnd.draw();
         stage.act();
         if (changeTurn1) {
             if (aux) {
@@ -102,6 +121,7 @@ public class GameScreen implements Screen {
             }
         }
         stage.draw();
+        stageHud.draw();
 
         if (linesTouched >= max * (max + 1) * 2) {
             game.setScreen(new GameOverScreen(this.game, pointsP1, pointsP2, max));
@@ -110,7 +130,9 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
+        stageBckgrnd.getViewport().update(width,height);
         stage.getViewport().update(width, height);
+        stageHud.getViewport().update(width,height);
     }
 
     @Override
@@ -130,10 +152,13 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
+        stageBckgrnd.dispose();
         stage.dispose();
+        stageHud.dispose();
     }
 
     private void createHud() {
+        stageHud = new Stage();
 
         float cellWidth = width / 6;
         Button btnExit = new TextButton("Exit", skin);
@@ -157,7 +182,7 @@ public class GameScreen implements Screen {
                 game.setScreen(new MainMenuScreen(game));
             }
         });
-        stage.addActor(hud);
+        stageHud.addActor(hud);
     }
 
     private void createSquares() {
@@ -188,21 +213,17 @@ public class GameScreen implements Screen {
                 }
                 square.lines[0] = lines[x][y][1];
                 square.lines[1] = lines[x][y][0];
-
-
             }
         }
     }
 
     private ActorLinea createBline(float squareX, float squareY) {
         final ActorLinea lineaB = new ActorLinea(this);
-        int initialposX = (int) squareX, initialposY = (int) squareY;
-
-        lineaB.setPosition(initialposX + lineaB.getHeight() / 2, initialposY - lineaB.getHeight() / 2);
-        lineaB.setSize(size - lineaB.getHeight(), lineaB.getHeight());
+        float initialposX = squareX, initialposY = squareY;
+        lineaB.setSize(size * 0.9f, size * 0.2f);
+        lineaB.setPosition(initialposX + 0.05f*size, initialposY - lineaB.getHeight() / 2);
 
         stage.addActor(lineaB);
-
         lineaB.addMyListener();
 
         return lineaB;
@@ -210,11 +231,11 @@ public class GameScreen implements Screen {
 
     private ActorLinea createLline(float squareX, float squareY) {
         final ActorLinea lineaL = new ActorLinea(this);
-        int initialposX = (int) squareX, initialposY = (int) squareY;
+        int initialPosX = (int) squareX, initialPosY = (int) squareY;
 
         lineaL.setRotation(90);
-        lineaL.setPosition(initialposX + lineaL.getHeight() / 2, initialposY + lineaL.getHeight() / 2);
-        lineaL.setSize(size - lineaL.getHeight(), lineaL.getHeight());
+        lineaL.setSize(size * 0.9f, size * 0.2f);
+        lineaL.setPosition(initialPosX + lineaL.getHeight() / 2, initialPosY + 0.05f * size);
 
         stage.addActor(lineaL);
 
@@ -230,8 +251,8 @@ public class GameScreen implements Screen {
 
 
         lineaR.setRotation(90);
-        lineaR.setPosition(initialposX + size + lineaR.getHeight() / 2, initialposY + lineaR.getHeight() / 2);
-        lineaR.setSize(size - lineaR.getHeight(), lineaR.getHeight());
+        lineaR.setSize(size * 0.9f, size * 0.2f);
+        lineaR.setPosition(initialposX + size + lineaR.getHeight() / 2, initialposY + 0.05f*size);
 
         stage.addActor(lineaR);
 
@@ -243,8 +264,8 @@ public class GameScreen implements Screen {
         final ActorLinea lineaT = new ActorLinea(this);
         int initialposX = (int) squareX, initialposY = (int) squareY;
 
-        lineaT.setPosition(initialposX + lineaT.getHeight() / 2, initialposY + size - lineaT.getHeight() / 2);
-        lineaT.setSize(size - lineaT.getHeight(), lineaT.getHeight());
+        lineaT.setSize(size * 0.9f, size * 0.2f);
+        lineaT.setPosition(initialposX + 0.05f*size, initialposY + size - lineaT.getHeight() / 2);
         stage.addActor(lineaT);
 
         lineaT.addMyListener();
