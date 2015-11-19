@@ -79,11 +79,12 @@ public class GameScreen implements Screen {
         createSquares();
 
         InputMultiplexer multiplexer = new InputMultiplexer();
+        ZoomGestureDetector gestureD = new ZoomGestureDetector((OrthographicCamera) stage.getCamera());
+
+        multiplexer.addProcessor(new GestureDetector(gestureD));
         multiplexer.addProcessor(stageHud);
         multiplexer.addProcessor(stage);
 
-        ZoomGestureDetector gestureD = new ZoomGestureDetector((OrthographicCamera) stage.getCamera());
-        multiplexer.addProcessor(new GestureDetector(gestureD));
 
         Gdx.input.setInputProcessor(multiplexer);
 
@@ -219,9 +220,8 @@ public class GameScreen implements Screen {
 
     private ActorLinea createBline(float squareX, float squareY) {
         final ActorLinea lineaB = new ActorLinea(this);
-        float initialposX = squareX, initialposY = squareY;
         lineaB.setSize(size * 0.9f, size * 0.2f);
-        lineaB.setPosition(initialposX + 0.05f*size, initialposY - lineaB.getHeight() / 2);
+        lineaB.setPosition(squareX + 0.05f*size, squareY - lineaB.getHeight() / 2);
 
         stage.addActor(lineaB);
         lineaB.addMyListener();
@@ -231,11 +231,10 @@ public class GameScreen implements Screen {
 
     private ActorLinea createLline(float squareX, float squareY) {
         final ActorLinea lineaL = new ActorLinea(this);
-        int initialPosX = (int) squareX, initialPosY = (int) squareY;
 
         lineaL.setRotation(90);
         lineaL.setSize(size * 0.9f, size * 0.2f);
-        lineaL.setPosition(initialPosX + lineaL.getHeight() / 2, initialPosY + 0.05f * size);
+        lineaL.setPosition(squareX + lineaL.getHeight() / 2, squareY + 0.05f * size);
 
         stage.addActor(lineaL);
 
@@ -247,12 +246,11 @@ public class GameScreen implements Screen {
     private ActorLinea createRline(float squareX, float squareY) {
 
         final ActorLinea lineaR = new ActorLinea(this);
-        int initialposX = (int) squareX, initialposY = (int) squareY;
 
 
         lineaR.setRotation(90);
         lineaR.setSize(size * 0.9f, size * 0.2f);
-        lineaR.setPosition(initialposX + size + lineaR.getHeight() / 2, initialposY + 0.05f*size);
+        lineaR.setPosition(squareX + size + lineaR.getHeight() / 2, squareY + 0.05f*size);
 
         stage.addActor(lineaR);
 
@@ -262,10 +260,9 @@ public class GameScreen implements Screen {
 
     private ActorLinea createTline(float squareX, float squareY) {
         final ActorLinea lineaT = new ActorLinea(this);
-        int initialposX = (int) squareX, initialposY = (int) squareY;
 
         lineaT.setSize(size * 0.9f, size * 0.2f);
-        lineaT.setPosition(initialposX + 0.05f*size, initialposY + size - lineaT.getHeight() / 2);
+        lineaT.setPosition(squareX + 0.05f*size, squareY + size - lineaT.getHeight() / 2);
         stage.addActor(lineaT);
 
         lineaT.addMyListener();
