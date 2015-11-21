@@ -60,27 +60,24 @@ public class ActorLinea extends Actor implements Disposable {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 Color color = getColor();
-                if (firstTouch){
+                if (firstTouch) {
                     touched = true;
                     screen.linesTouched++;
-                    if(screen.turn) {
+                    if (screen.turn) {
                         addAction(Actions.color(new Color(0, color.g, 0, 1f)));
                         screen.pointsP1++;
                         screen.labelPointsP1.setText(Integer.toString(screen.pointsP1));
-                        screen.changeTurn1=true;
+                        screen.changeTurn1 = true;
 
-                    }else{
+                    } else {
                         addAction(Actions.color(new Color(color.r, 0, 0, 1f)));
                         screen.pointsP2++;
                         screen.labelPointsP2.setText(Integer.toString(screen.pointsP2));
-                        screen.changeTurn1=true;
+                        screen.changeTurn1 = true;
 
                     }
                 }
-                firstTouch=false;
-
-
-
+                firstTouch = false;
                 return true;
             }
 
@@ -91,5 +88,11 @@ public class ActorLinea extends Actor implements Disposable {
         });
     }
 
+    public void touch(){
+        firstTouch=false;
+        touched=true;
+        addAction(Actions.color(new Color(0,0,1,1f)));
+        screen.linesTouched++;
+    }
 
 }

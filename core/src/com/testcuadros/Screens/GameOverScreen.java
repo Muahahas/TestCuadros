@@ -83,6 +83,7 @@ public class GameOverScreen implements Screen {
 
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                stage.dispose();
                 game.setScreen(new GameScreen(game, max));
             }
         });
@@ -91,6 +92,10 @@ public class GameOverScreen implements Screen {
 
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                if (game.lastGame != null) {
+                    game.lastGame = null;
+                }
+                stage.dispose();
                 game.setScreen(new MainMenuScreen(game));
             }
         });

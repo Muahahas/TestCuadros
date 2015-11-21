@@ -1,9 +1,11 @@
 package com.testcuadros;
 
 import com.badlogic.gdx.Game;
+import com.testcuadros.Screens.GameScreen;
 import com.testcuadros.Screens.MainMenuScreen;
 
 public class MainGame extends Game {
+    public GameScreen lastGame;
 
 
     public void create() {

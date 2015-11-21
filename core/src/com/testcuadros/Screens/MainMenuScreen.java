@@ -35,7 +35,7 @@ public class MainMenuScreen implements Screen {
 
         final Button btnNewGame, btnLoadGame, btnSettings, btnQuit;
         btnNewGame = new TextButton("New Game", skin);
-        btnLoadGame = new TextButton("Maybe later..", skin);
+        btnLoadGame = new TextButton("Load Game", skin);
         btnSettings = new TextButton("Maybe in a long time..", skin);
         btnQuit = new TextButton("Quit", skin);
 
@@ -49,13 +49,30 @@ public class MainMenuScreen implements Screen {
         btnNewGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                stage.dispose();
                 game.setScreen(new NewGameScreen(game));
+            }
+        });
+
+        btnLoadGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(game.lastGame!=null) {
+                    stage.dispose();
+                    Gdx.input.setInputProcessor(game.lastGame.multiplexer);
+                    game.lastGame.music.play();
+                    game.setScreen(game.lastGame);
+                }
             }
         });
 
         btnQuit.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                if (game.lastGame != null)
+                    game.lastGame.dispose();
+
+                stage.dispose();
                 Gdx.app.exit();
             }
         });

@@ -38,7 +38,7 @@ public class NewGameScreen implements Screen {
         btn5 = new TextButton("5x5", skin);
         btn9 = new TextButton("9x9", skin);
 
-        btnQuit = new TextButton("Quit", skin);
+        btnQuit = new TextButton("Back", skin);
 
         final int w = 300, h = 50, sep = 20;
         Table tblLayout = new Table();
@@ -51,24 +51,44 @@ public class NewGameScreen implements Screen {
         btn3.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                if (game.lastGame != null) {
+                    game.lastGame.dispose();
+                    game.lastGame = null;
+                }
+                stage.dispose();
                 game.setScreen(new GameScreen(game, 3));
             }
         });
         btn4.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                if (game.lastGame != null) {
+                    game.lastGame.dispose();
+                    game.lastGame = null;
+                }
+                stage.dispose();
                 game.setScreen(new GameScreen(game, 4));
             }
         });
         btn5.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                if (game.lastGame != null) {
+                    game.lastGame.dispose();
+                    game.lastGame = null;
+                }
+                stage.dispose();
                 game.setScreen(new GameScreen(game, 5));
             }
         });
         btn9.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                if (game.lastGame != null) {
+                    game.lastGame.dispose();
+                    game.lastGame = null;
+                }
+                stage.dispose();
                 game.setScreen(new GameScreen(game, 9));
             }
         });
@@ -76,6 +96,7 @@ public class NewGameScreen implements Screen {
         btnQuit.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                stage.dispose();
                 game.setScreen(new MainMenuScreen(game));
             }
         });

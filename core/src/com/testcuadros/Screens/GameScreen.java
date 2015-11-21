@@ -3,6 +3,7 @@ package com.testcuadros.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -48,6 +49,8 @@ public class GameScreen implements Screen {
     public int linesTouched;
     public Table hud;
     Image imgFondo;
+    public InputMultiplexer multiplexer;
+    public Music music = Gdx.audio.newMusic(Gdx.files.internal("music/gameScreen.mp3"));
 
     public GameScreen(final MainGame game, int max) {
 
@@ -69,7 +72,7 @@ public class GameScreen implements Screen {
         this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
         this.game = game;
         this.stage = new Stage();
-        this.stageBckgrnd= new Stage();
+        this.stageBckgrnd = new Stage();
 
         imgFondo = new Image(new Texture("stars.png"));
         imgFondo.setFillParent(true);
@@ -78,15 +81,15 @@ public class GameScreen implements Screen {
         createHud();
         createSquares();
 
-        InputMultiplexer multiplexer = new InputMultiplexer();
-        ZoomGestureDetector gestureD = new ZoomGestureDetector((OrthographicCamera) stage.getCamera());
-
+        this.multiplexer = new InputMultiplexer();
+        ZoomGestureDetector gestureD = new ZoomGestureDetector((OrthographicCamera) stage.getCamera(), xStart, yStart);
         multiplexer.addProcessor(new GestureDetector(gestureD));
         multiplexer.addProcessor(stageHud);
         multiplexer.addProcessor(stage);
 
 
         Gdx.input.setInputProcessor(multiplexer);
+        music.play();
 
     }
 
@@ -125,15 +128,17 @@ public class GameScreen implements Screen {
         stageHud.draw();
 
         if (linesTouched >= max * (max + 1) * 2) {
+            music.stop();
+            this.dispose();
             game.setScreen(new GameOverScreen(this.game, pointsP1, pointsP2, max));
         }
     }
 
     @Override
     public void resize(int width, int height) {
-        stageBckgrnd.getViewport().update(width,height);
+        stageBckgrnd.getViewport().update(width, height);
         stage.getViewport().update(width, height);
-        stageHud.getViewport().update(width,height);
+        stageHud.getViewport().update(width, height);
     }
 
     @Override
@@ -153,6 +158,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
+        music.dispose();
         stageBckgrnd.dispose();
         stage.dispose();
         stageHud.dispose();
@@ -180,6 +186,8 @@ public class GameScreen implements Screen {
         btnExit.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                music.pause();
+                game.lastGame = (GameScreen) game.getScreen();
                 game.setScreen(new MainMenuScreen(game));
             }
         });
@@ -221,7 +229,9 @@ public class GameScreen implements Screen {
     private ActorLinea createBline(float squareX, float squareY) {
         final ActorLinea lineaB = new ActorLinea(this);
         lineaB.setSize(size * 0.9f, size * 0.2f);
-        lineaB.setPosition(squareX + 0.05f*size, squareY - lineaB.getHeight() / 2);
+        lineaB.setPosition(squareX + 0.05f * size, squareY - lineaB.getHeight() / 2);
+        if (squareY == yStart)
+            lineaB.touch();
 
         stage.addActor(lineaB);
         lineaB.addMyListener();
@@ -235,6 +245,8 @@ public class GameScreen implements Screen {
         lineaL.setRotation(90);
         lineaL.setSize(size * 0.9f, size * 0.2f);
         lineaL.setPosition(squareX + lineaL.getHeight() / 2, squareY + 0.05f * size);
+        if (squareX == xStart)
+            lineaL.touch();
 
         stage.addActor(lineaL);
 
@@ -250,7 +262,8 @@ public class GameScreen implements Screen {
 
         lineaR.setRotation(90);
         lineaR.setSize(size * 0.9f, size * 0.2f);
-        lineaR.setPosition(squareX + size + lineaR.getHeight() / 2, squareY + 0.05f*size);
+        lineaR.setPosition(squareX + size + lineaR.getHeight() / 2, squareY + 0.05f * size);
+        lineaR.touch();
 
         stage.addActor(lineaR);
 
@@ -262,7 +275,8 @@ public class GameScreen implements Screen {
         final ActorLinea lineaT = new ActorLinea(this);
 
         lineaT.setSize(size * 0.9f, size * 0.2f);
-        lineaT.setPosition(squareX + 0.05f*size, squareY + size - lineaT.getHeight() / 2);
+        lineaT.setPosition(squareX + 0.05f * size, squareY + size - lineaT.getHeight() / 2);
+        lineaT.touch();
         stage.addActor(lineaT);
 
         lineaT.addMyListener();
